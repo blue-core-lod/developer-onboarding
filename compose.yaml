@@ -99,7 +99,7 @@ services:
 
   sinopia:
     restart: always
-    image: ghcr.io/blue-core-lod/sinopia:latest
+    image: sinopia:local
     expose:
       - 8004
     depends_on:
