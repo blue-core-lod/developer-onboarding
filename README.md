@@ -20,7 +20,7 @@ Steps for setting up the Blue Core stack to run locally on your machine.
      --build-arg VITE_KEYCLOAK_AUTH_PATH="http://localhost:8000/keycloak/" \
      --build-arg VITE_BLUECORE_API_PATH="http://localhost:8000/api/" \
      --tag marva:local \
-     "https://github.com/blue-core-lod/marva_editor.git#bluecore-dev"
+     "https://github.com/blue-core-lod/marva_editor.git#onboarding"
    ```
    > **Note:** This step is required because the Marva editor is a Vite app that bakes environment variables (including the Keycloak URL) into the static bundle at build time.
 4. Build the Sinopia editor image with the local Keycloak URL:
@@ -29,11 +29,22 @@ Steps for setting up the Blue Core stack to run locally on your machine.
      --build-arg KEYCLOAK_URL="http://localhost:8000/keycloak/" \
      --build-arg SINOPIA_URI="http://localhost:8000/sinopia" \
      --build-arg SINOPIA_API_BASE_URL="http://localhost:8000/api" \
-     --build-arg SEARCH_HOST="http://localhost:8000/api" \
+     --build-arg SEARCH_HOST="http://localhost:8000/api/search" \
      --tag sinopia:local \
      "https://github.com/blue-core-lod/sinopia_editor.git"
    ```
 5. Start Docker environment `docker compose up -d`
+6. Run Alembic Database Migrations
+   ```
+    docker run --rm -it --network host python:3.12 bash -c "
+        git clone https://github.com/blue-core-lod/bluecore-models.git &&
+        cd bluecore-models &&
+        curl -LsSf https://astral.sh/uv/install.sh | sh &&
+        source /root/.local/bin/env &&
+        uv sync &&
+        uv run alembic upgrade head
+  "
+   ```
 
 ## Creating a custom user/group in the Keycloak Bluecore realm
 
@@ -50,3 +61,4 @@ Steps for setting up the Blue Core stack to run locally on your machine.
 ## Using Blue Core AI Agent(s) in a Jupyter notebook
 
 ## Using the MCP API
+
