@@ -1,5 +1,13 @@
 # Blue Core Developer On-boarding
 
+This repository contains some documentation and configuration to help you get started with the [Blue Core](https://bluecore.info/) stack. Blue Core aims to create a community-operated BIBFRAME datastore where ownership and creation of the metadata are shared among member institutions, eliminating the need for duplicative institutional copies, and bringing library linked open data to production at scale. The technical stack currently includes:
+
+* BIBFRAME Editors: Marva and Sinopia are included in the stack to demonstrate how the core Blue Core service can serve as a storage system used by a larger ecosystem of BIBFRAME tools.
+* API Service: A REST based API for creating, reading, updating and deleting BIBFRAME data. It also includes an MCP API for generative AI agents. 
+* Identity Management: A Keycloak based system for managing human and automated access to the API.
+* Workflow System: An Apache Airflow system for managing the loading BIBFRAME data into ILS systems.
+
+Below are some instructions for getting started experimenting with you own instance of these services.
 
 ## Local Setup
 Steps for setting up the Blue Core stack to run locally on your machine.
@@ -25,4 +33,20 @@ Steps for setting up the Blue Core stack to run locally on your machine.
      --tag sinopia:local \
      "https://github.com/blue-core-lod/sinopia_editor.git"
    ```
-4. Start Docker environment `docker compose up -d`
+5. Start Docker environment `docker compose up -d`
+
+## Creating a custom user/group in the Keycloak Bluecore realm
+
+## Ingesting CBD files 
+
+(with the participants find CBDs in id.loc.gov), either through the command-line, the Graph Toolbox, or a Jupyter Notebook)
+
+## Editing in Sinopia
+
+## Editing in Marva
+
+## Using the Graph Toolbox
+
+## Using Blue Core AI Agent(s) in a Jupyter notebook
+
+## Using the MCP API
