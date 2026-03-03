@@ -43,7 +43,7 @@ Steps for setting up the Blue Core stack to run locally on your machine.
         source /root/.local/bin/env &&
         uv sync &&
         uv run alembic upgrade head
-  "
+      "
    ```
 
 ## Creating a custom user/group in the Keycloak Bluecore realm
