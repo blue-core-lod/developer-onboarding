@@ -45,6 +45,9 @@ Steps for setting up the Blue Core stack to run locally on your machine.
         uv run alembic upgrade head
       "
    ```
+6. Set-up Blue Core Airflow
+   1. Add `bluecore_url` variable with value of `http://localhost:8000`
+   2. Unpause `resource_loader` DAG 
 
 ## Creating a custom user/group in the Keycloak Bluecore realm
 
