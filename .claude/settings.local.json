@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+     "mcp__blue-core__search"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "blue-core"
+  ]
+}
