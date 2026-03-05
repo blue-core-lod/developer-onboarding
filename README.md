@@ -11,7 +11,9 @@ This repository contains some documentation and configuration to help you get st
   access to the API.
 * Workflow System: An [Apache Airflow](https://airflow.apache.org/) system for managing the loading BIBFRAME 
   data into ILS systems and ingesting CBD files into Blue Core Postgres database.
-
+* A developer account is available for use in the various services:
+  - **user:** `developer`
+  - **password:** `123456`
 Below are some instructions for getting started experimenting with you own instance of these services.
 
 ## Local Setup
@@ -19,7 +21,8 @@ Steps for setting up the Blue Core stack to run locally on your machine.
 
 1. Clone the repository: `git clone --recurse-submodules https://github.com/blue-core-lod/developer-onboarding.git`
 2. Change to the `developer-onboarding` directory
-3. Build the Marva editor image with the local Keycloak URL:
+3. Run `mv .env-example .env` for local environment file.
+4. Build the Marva editor image with the local Keycloak URL:
    ```
    docker build \
      --build-arg VITE_KEYCLOAK_AUTH_PATH="http://localhost:8000/keycloak/" \
@@ -28,7 +31,7 @@ Steps for setting up the Blue Core stack to run locally on your machine.
      "https://github.com/blue-core-lod/marva_editor.git#onboarding"
    ```
    > **Note:** This step is required because the Marva editor is a Vite app that bakes environment variables (including the Keycloak URL) into the static bundle at build time.
-4. Build the Sinopia editor image with the local Keycloak URL:
+5. Build the Sinopia editor image with the local Keycloak URL:
    ```
    docker build \
      --build-arg KEYCLOAK_URL="http://localhost:8000/keycloak/" \
@@ -38,8 +41,8 @@ Steps for setting up the Blue Core stack to run locally on your machine.
      --tag sinopia:local \
      "https://github.com/blue-core-lod/sinopia_editor.git"
    ```
-5. Start Docker environment `docker compose up -d`
-6. Run Alembic Database Migrations
+6. Start Docker environment `docker compose up -d`
+7. Run Alembic Database Migrations
    ```
     docker run --rm -it --network host python:3.12 bash -c "
         git clone https://github.com/blue-core-lod/bluecore-models.git &&
@@ -50,9 +53,10 @@ Steps for setting up the Blue Core stack to run locally on your machine.
         uv run alembic upgrade head
       "
    ```
-6. Set-up Blue Core Airflow
-   1. Add `bluecore_url` variable with value of `http://localhost:8000`
-   2. Unpause `resource_loader` DAG 
+8. Set-up Blue Core Airflow
+   1. Click on the `http://localhost:8000/workflows`
+   2. Add `bluecore_url` variable with value of `http://localhost:8000`
+   3. Unpause `resource_loader` DAG 
 
 ## Install Dependencies with uv
 1. If you haven't already, please install [uv](https://github.com/astral-sh/uv)
@@ -71,7 +75,6 @@ command:
 2. Open the `01_UploadSinopiaProfiles.ipynb` notebook
 3. Run all of the cells in the notebook.
 
-
 ## Ingesting CBD files 
 
 (with the participants find CBDs in id.loc.gov), either through the command-line, the Graph Toolbox, or a Jupyter Notebook)
@@ -81,13 +84,37 @@ command:
 2. Run all of the cells in the notebook
 3. This code will launch 50 runs of the `resource_loader` DAG
 
+### Create Work and Instance Vectors
+1. Make sure all of the `r
+1. Launch the `03_WorkAndInstanceVectors.ipynb`
+2. Run the cells
+
 ## Editing in Sinopia
+1. Log into Sinopia 
+2. Search for an existing Work or Instance
+3. When loading, select either a Blue Core `_Work` or `_Instance` template
+4. Add a note in Sinopia
+5. Save (and fix any errors) 
+6. Directly open the resource with the URL to see the changes
 
 ## Editing in Marva
+1. Open Marva
+2. Copy a Instance URL into Load field
+3. Edit the Loaded Instance or Work
+4. POST to save the changes to the Blue Core 
 
 ## Using the Graph Toolbox
+1. Local edit `nginx/toolbox/index.html` on line 49, change to use port 8000
+2. Click on Graph toolbox
+3. Run a search
+4. Load resources
 
 ## Using Blue Core AI Agent(s) in a Jupyter notebook
+1. Set 'PROVIDER_URL' and 'PROVIDER_API_KEY' for OpenAI or Antropic Client
+2. Launch the `04_DeDuplicateAgent.ipynb` notebook
+3. Run the cells and experiment with results
+ 
 
-## Using the MCP API
-
+## Using the MCP API with Claude Code
+1. Use Claude Code
+2. Give Claude a prompt to `Use the local Blue Core MCP server using notebooks/blue_core_mcp.py` 

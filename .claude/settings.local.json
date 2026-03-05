@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-     "mcp__blue-core__search"
+      "mcp__blue-core__search",
+      "WebFetch(domain:id.loc.gov)"
     ]
   },
   "enableAllProjectMcpServers": true,
