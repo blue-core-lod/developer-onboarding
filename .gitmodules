@@ -1,3 +1,6 @@
 [submodule "nginx/toolbox"]
 	path = nginx/toolbox
 	url = https://github.com/blue-core-lod/graph-toolbox.git
+[submodule "bluecore_agents"]
+	path = bluecore_agents
+	url = https://github.com/blue-core-lod/bluecore-agents.git
