@@ -21,7 +21,7 @@ Steps for setting up the Blue Core stack to run locally on your machine.
 
 1. Clone the repository: `git clone --recurse-submodules https://github.com/blue-core-lod/developer-onboarding.git`
 2. Change to the `developer-onboarding` directory
-3. Run `mv .env-example .env` for local environment file.
+3. Run `cp .env-example .env` for local environment file.
 4. Build the Marva editor image with the local Keycloak URL:
    ```
    docker build \
@@ -31,6 +31,7 @@ Steps for setting up the Blue Core stack to run locally on your machine.
      "https://github.com/blue-core-lod/marva_editor.git#onboarding"
    ```
    > **Note:** This step is required because the Marva editor is a Vite app that bakes environment variables (including the Keycloak URL) into the static bundle at build time.
+
 5. Build the Sinopia editor image with the local Keycloak URL:
    ```
    docker build \
@@ -41,19 +42,10 @@ Steps for setting up the Blue Core stack to run locally on your machine.
      --tag sinopia:local \
      "https://github.com/blue-core-lod/sinopia_editor.git"
    ```
+
 6. Start Docker environment `docker compose up -d`
-7. Run Alembic Database Migrations
-   ```
-    docker run --rm -it --network host python:3.12 bash -c "
-        git clone https://github.com/blue-core-lod/bluecore-models.git &&
-        cd bluecore-models &&
-        curl -LsSf https://astral.sh/uv/install.sh | sh &&
-        source /root/.local/bin/env &&
-        uv sync &&
-        uv run alembic upgrade head
-      "
-   ```
-8. Set-up Blue Core Airflow
+
+7. Set-up Blue Core Airflow
    1. Click on the `http://localhost:8000/workflows`
    2. Add `bluecore_url` variable with value of `http://localhost:8000`
    3. Unpause `resource_loader` DAG 
