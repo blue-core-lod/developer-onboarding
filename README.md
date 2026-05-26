@@ -77,7 +77,7 @@ command:
 3. This code will launch 50 runs of the `resource_loader` DAG
 
 ### Create Work and Instance Vectors
-1. Make sure all of the `r
+1. Make sure all of the 50 CBD files have been loaded from `02_Load_CBDs.ipynb`.
 1. Launch the `03_WorkAndInstanceVectors.ipynb`
 2. Run the cells
 
