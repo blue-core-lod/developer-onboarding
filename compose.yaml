@@ -1,12 +1,10 @@
-x-airflow-common:
-  &airflow-common
+x-airflow-common: &airflow-common
   # In order to add custom dependencies or upgrade provider distributions you can use your extended image.
   # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
   # image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:3.0.1}
   image: ghcr.io/blue-core-lod/bluecore-workflows:latest
-  environment:
-    &airflow-common-env
+  environment: &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
@@ -41,9 +39,8 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/uploads:/opt/airflow/uploads
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
 
-  user: "${AIRFLOW_UID:-50000}:0"
-  depends_on:
-    &airflow-common-depends-on
+  user: '${AIRFLOW_UID:-50000}:0'
+  depends_on: &airflow-common-depends-on
     redis:
       condition: service_healthy
     postgres:
@@ -62,7 +59,7 @@ services:
       - postgres-db-volume:/var/lib/postgresql/data
       - ./scripts/init-multi-postgres-dbs.sh:/docker-entrypoint-initdb.d/init-multi-postgres-dbs.sh
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
+      test: ['CMD', 'pg_isready', '-U', 'airflow']
       interval: 10s
       retries: 5
       start_period: 5s
@@ -75,7 +72,7 @@ services:
     expose:
       - 6379
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 30s
       retries: 50
@@ -89,13 +86,13 @@ services:
       - 8100
     env_file:
       - ./.env
-    user: "${AIRFLOW_UID:-50000}:0"
+    user: '${AIRFLOW_UID:-50000}:0'
     environment:
       MILVUS_URI: http://milvus:19530
     depends_on:
       - postgres
     volumes:
-       - ${AIRFLOW_PROJ_DIR:-.}/uploads:/bluecore_api/uploads
+      - ${AIRFLOW_PROJ_DIR:-.}/uploads:/bluecore_api/uploads
 
   sinopia:
     restart: always
@@ -119,7 +116,7 @@ services:
     expose:
       - 8080
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8080/api/v2/version"]
+      test: ['CMD', 'curl', '--fail', 'http://localhost:8080/api/v2/version']
       interval: 30s
       timeout: 10s
       retries: 5
@@ -136,7 +133,7 @@ services:
     <<: *airflow-common
     command: scheduler
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
+      test: ['CMD', 'curl', '--fail', 'http://localhost:8974/health']
       interval: 30s
       timeout: 10s
       retries: 5
@@ -151,7 +148,11 @@ services:
     <<: *airflow-common
     command: dag-processor
     healthcheck:
-      test: ["CMD-SHELL", 'airflow jobs check --job-type DagProcessorJob --hostname "$${HOSTNAME}"']
+      test:
+        [
+          'CMD-SHELL',
+          'airflow jobs check --job-type DagProcessorJob --hostname "$${HOSTNAME}"',
+        ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -168,7 +169,7 @@ services:
     healthcheck:
       # yamllint disable rule:line-length
       test:
-        - "CMD-SHELL"
+        - 'CMD-SHELL'
         - 'celery --app airflow.providers.celery.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}" || celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"'
       interval: 30s
       timeout: 10s
@@ -178,7 +179,7 @@ services:
       <<: *airflow-common-env
       # Required to handle warm shutdown of the celery workers properly
       # See https://airflow.apache.org/docs/docker-stack/entrypoint.html#signal-propagation
-      DUMB_INIT_SETSID: "0"
+      DUMB_INIT_SETSID: '0'
       # AIRFLOW__CORE__EXECUTION_API_SERVER_URL: 'http://airflow-apiserver:8080/workflows/execution/'
 
     restart: always
@@ -193,7 +194,11 @@ services:
     <<: *airflow-common
     command: triggerer
     healthcheck:
-      test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
+      test:
+        [
+          'CMD-SHELL',
+          'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"',
+        ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -296,7 +301,7 @@ services:
       _PIP_ADDITIONAL_REQUIREMENTS: ''
     env_file:
       - ./.env
-    user: "0:0"
+    user: '0:0'
     volumes:
       - ${AIRFLOW_PROJ_DIR:-.}:/sources
 
@@ -306,7 +311,7 @@ services:
       - debug
     environment:
       <<: *airflow-common-env
-      CONNECTION_CHECK_MAX_COUNT: "0"
+      CONNECTION_CHECK_MAX_COUNT: '0'
     # Workaround for entrypoint issue. See: https://github.com/apache/airflow/issues/16252
     command:
       - bash
@@ -324,9 +329,9 @@ services:
     profiles:
       - flower
     ports:
-      - "5555:5555"
+      - '5555:5555'
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:5555/"]
+      test: ['CMD', 'curl', '--fail', 'http://localhost:5555/']
       interval: 30s
       timeout: 10s
       retries: 5
@@ -348,7 +353,7 @@ services:
       - ${AIRFLOW_PROJ_DIR:-.}/milvus/etcd:/etcd
     command: etcd -advertise-client-urls=http://etcd:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
     healthcheck:
-      test: ["CMD", "etcdctl", "endpoint", "health"]
+      test: ['CMD', 'etcdctl', 'endpoint', 'health']
       interval: 30s
       timeout: 20s
       retries: 3
@@ -360,13 +365,13 @@ services:
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
     ports:
-      - "9001:9001"
-      - "9000:9000"
+      - '9001:9001'
+      - '9000:9000'
     volumes:
       - ${AIRFLOW_PROJ_DIR:-.}/milvus/minio:/minio_data
     command: minio server /minio_data --console-address ":9001"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
       interval: 30s
       timeout: 20s
       retries: 3
@@ -374,9 +379,9 @@ services:
   milvus:
     container_name: milvus-standalone
     image: milvusdb/milvus:v2.6.2
-    command: ["milvus", "run", "standalone"]
+    command: ['milvus', 'run', 'standalone']
     security_opt:
-    - seccomp:unconfined
+      - seccomp:unconfined
     environment:
       ETCD_ENDPOINTS: etcd:2379
       MINIO_ADDRESS: minio:9000
@@ -384,17 +389,17 @@ services:
     volumes:
       - ${AIRFLOW_PROJ_DIR:-.}/milvus/milvus:/var/lib/milvus
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:9091/healthz']
       interval: 30s
       start_period: 90s
       timeout: 20s
       retries: 3
     ports:
-      - "19530:19530"
-      - "9091:9091"
+      - '19530:19530'
+      - '9091:9091'
     depends_on:
-      - "etcd"
-      - "minio"
+      - 'etcd'
+      - 'minio'
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.2
     expose:
@@ -406,10 +411,16 @@ services:
       - start-dev
       - --import-realm
     healthcheck:
-      test: [ "CMD-SHELL", "exec 3<> /dev/tcp/127.0.0.1/9000; echo -e 'GET /health/ready HTTP/1.1\\r\\nhost: http://localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3; if [ $? -eq 0 ]; then echo 'Healthcheck Successful'; exit 0; else echo 'Healthcheck Failed'; exit 1; fi;" ]
+      test:
+        [
+          'CMD-SHELL',
+          "exec 3<> /dev/tcp/127.0.0.1/9000; echo -e 'GET /health/ready HTTP/1.1\\r\\nhost: http://localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3; if [ $? -eq 0 ]; then echo 'Healthcheck Successful'; exit 0; else echo 'Healthcheck Failed'; exit 1; fi;",
+        ]
       interval: 10s
       timeout: 10s
       retries: 20
+    depends_on:
+      - postgres
     volumes:
       - ./keycloak-export/bluecore-realm.json:/opt/keycloak/data/import/realm.json
       - ./keycloak-export/:/opt/keycloak/data/export
@@ -417,7 +428,7 @@ services:
   nginx:
     image: nginx:1.27.4-alpine
     ports:
-      - "8000:80"
+      - '8000:80'
     depends_on:
       - keycloak
       - airflow-apiserver
