@@ -1,3 +1,6 @@
+[tool.setuptools.packages.find]
+include = ["bluecore_agents*"]
+
 [project]
 name = "developer-onboarding"
 version = "0.1.0"
