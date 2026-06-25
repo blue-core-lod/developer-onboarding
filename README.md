@@ -14,6 +14,7 @@ This repository contains some documentation and configuration to help you get st
 * A developer account is available for use in the various services:
   - **user:** `developer`
   - **password:** `123456`
+
 Below are some instructions for getting started experimenting with you own instance of these services.
 
 ## Local Setup
@@ -46,9 +47,10 @@ Steps for setting up the Blue Core stack to run locally on your machine.
 6. Start Docker environment `docker compose up -d`
 
 7. Set-up Blue Core Airflow
-   1. Click on the `http://localhost:8000/workflows`
+   1. Navigate to [`http://localhost:8000/workflows/variables`](http://localhost:8000/workflows/variables) (Login using the `developer` account above)
    2. Add `bluecore_url` variable with value of `http://localhost:8000`
-   3. Unpause `resource_loader` DAG 
+   3. Navigate to [`http://localhost:8000/workflows/dags`](http://localhost:8000/workflows/dags)
+   4. Unpause `resource_loader` DAG 
 
 ## Install Dependencies with uv
 1. If you haven't already, please install [uv](https://github.com/astral-sh/uv)
@@ -77,9 +79,17 @@ command:
 3. This code will launch 50 runs of the `resource_loader` DAG
 
 ### Create Work and Instance Vectors
+
+**Note:** This step will max out a available CPU resources and may take more than an hour to complete.
+
 1. Make sure all of the 50 CBD files have been loaded from `02_Load_CBDs.ipynb`.
 1. Launch the `03_WorkAndInstanceVectors.ipynb`
 2. Run the cells
+
+## Exploring data with the API
+1. Visit [`http://localhost:8000/api/docs#/`](http://localhost:8000/api/docs#/) to browse the interactive API documentation.
+2. Query the search endpoint to get a sample of the loaded data: [`http://localhost:8000/api/search/?limit=20&offset=0&type=all`](http://localhost:8000/api/search/?limit=20&offset=0&type=all)
+3. View an example [Instance](http://localhost:8000/instances/d31b780e-b58d-4253-be0c-8b812b3033f2) or [Work](http://localhost:8000/works/75e88614-b170-4873-8be8-0522fed694d1)
 
 ## Editing in Sinopia
 1. Log into Sinopia 
@@ -109,4 +119,4 @@ command:
 
 ## Using the MCP API with Claude Code
 1. Use Claude Code
-2. Give Claude a prompt to `Use the local Blue Core MCP server using notebooks/blue_core_mcp.py` 
+2. Give Claude a prompt to `Use the local Blue Core MCP server using notebooks/blue_core_mcp.py`
